@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Previewer Plugin Demo Page</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="../src/previewer.css">
+    <link rel="stylesheet" href="assets/font-awesome/css/font-awesome.min.css">
+
+    <style type="text/css"> 
+        /* Style here is not necessary for your own project. Use the style specific to
+            your project's case */
+        body {
+            font-family: verdana;
+            color: #555;
+        }
+
+        .headline {
+            font-style: 42px;
+            font-weight: bolder;
+            text-align: center;
+            position: relative;
+            display: inline-block;
+        }
+
+        .headline:after {
+            content: "";
+            height: 2px solid #ccc;
+            width: 100%;
+            position: absolute;
+            left: 0px;
+            border: 1px solid red;
+            margin-top: 10px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        @media screen and (min-width: 800px) {
+            body {
+                padding: 20px 40px;
+            }
+        }
+        .gallery-wrapper {
+            margin-bottom: 50px;
+        }
+
+        .g-image {
+            width: 200px;
+            height: 200px;
+            float: left;
+            margin: 15px;
+        }
+
+        .clear {
+            clear: both;
+        }
+
+    </style>
+</head>
+<body>
+
+    <h1 class="headline"># Previewer Plugin </h1>
+    <!-- DEFAULT SETUP -->
+    <h1>Using default settings </h1>
+
+    <p>The following listed behaviour is the default out of the box for this plugin. Click any of the images below to check them out.</p>
+    <ul>
+        <li>Keyboard Navigation
+            <ul>
+                <li>Use the <strong>left arrow key</strong> ( <== ) to move back through your gallery</li>
+                <li>Use the <strong>right arrow key</strong> ( ==> ) to move forwared through your gallery</li>
+                <li>Use the <strong>space bar</strong> to perform the same function as the right arrow key</li>
+                <li>Use the <strong>escape key</strong> to close the current gallery preview</li>
+            </ul>
+        </li>
+        <li>Plugin uses a <strong>previous</strong> and <strong>next</strong> navigation buttons to move through gallery</li>
+        <li>Plugin comes with a default number based paginator updator, which tells you where you are in a gallery</li>
+    </ul>
+
+    <div class="gallery-wrapper">
+        <img src="images/hero-home.jpg" alt="" class="g-image">
+        <img src="images/IMG_8185-1800x996-970x500.jpg" alt="" class="g-image">
+        <img src="images/SplitShire-1270-970x500.jpg" alt="" class="g-image">
+        <img src="images/SplitShire-3080-1800x1200-970x500.jpg" alt="" class="g-image">
+        <img src="images/SplitShire-6636-970x500.jpg" alt="" class="g-image">
+        <img src="images/SplitShire-7613-1800x1200-970x500.jpg" alt="" class="g-image">
+        <img src="images/SplitShire-8856-1800x1200-970x500.jpg" alt="" class="g-image">
+        <p class="clear"></p>
+    </div>
+    
+    <h1>Click an image below and let autplay take over</h1>
+
+    <div class="gallery-wrapper-2">
+        <img src="images/photo-1423483641154-5411ec9c0ddf.jpg" alt="" class="g-image">
+        <img src="images/photo-1427348693976-99e4aca06bb9.jpg" alt="" class="g-image">
+        <img src="images/SplitShire-9687-1800x1200-970x500.jpg" alt="" class="g-image">
+        <img src="images/SplitShire-3080-1800x1200-970x500.jpg" alt="" class="g-image">
+        <p class="clear"></p>
+    </div>
+
+
+    <h1>Adding some sugar of customization</h1>
+    <p>The following listed options gives us the behaviour shown in the images below on preview. Check the <a href="https://github.com/ofelix03/previewer">docs</a> for other options available</p>
+    <p><strong>NB</strong>: option should be an object</p>
+    <ul>
+        <li><strong>transitionEffect</strong> : 'inOutBack' </li>
+        <li><strong>paginationType</strong> : 'bullet'</li>
+        <li><strong>paginationPosition</strong> : 'bottomLeft</li>
+        <li><strong>fullScreen</strong> : true</li>
+    </ul>
+    <div class="gallery-wrapper-3">
+        <img src="images/SplitShire-6636-970x500.jpg" alt="" class="g-image">
+        <img src="images/hero-home.jpg" alt="" class="g-image">
+        <img src="images/IMG_8185-1800x996-970x500.jpg" alt="" class="g-image">
+        <img src="images/SplitShire-1270-970x500.jpg" alt="" class="g-image">
+        <img src="images/SplitShire-3080-1800x1200-970x500.jpg" alt="" class="g-image">
+        <img src="images/photo-1423483641154-5411ec9c0ddf.jpg" alt="" class="g-image">
+        <img src="images/SplitShire-8856-1800x1200-970x500.jpg" alt="" class="g-image">
+        <p class="clear"></p>
+    </div>
+</body>
+
+<script type="text/javascript" src="assets/jquery/dist/jquery.min.js"></script>
+<script type="text/javascript" src="../src/previewer.js"></script>
+
+<script type="text/javascript">
+
+    // Demo 1: Initializing previewer with an empty options object
+    // var options = {}
+    $('.gallery-wrapper').previewer({});
+
+
+    // Demo 2: Initializing previewer with some options
+    // var options = {
+    //  transition: 'inBack',
+    //  paginationType: 'bullet',
+    //  paginationPosition: 'topRight',
+    //  autoPlay: true,
+    //  slideTimeout: 2000,
+    //  navPrevText: '<ion class="fa fa-arrow-left"></i>',
+    //  navNextText: '<ion class="fa fa-arrow-right"></i>',
+    //  closeButtonText: '<ion class="fa fa-close"></i>'
+    //  }
+    var autoPlayPreviewer = new Previewer('.gallery-wrapper-2', {
+        transitionEffect: 'inBack',
+        paginationType: 'bullet',
+        paginationPosition: 'topRight',
+        autoPlay: true,
+        slideTimeout: 2500,
+        navPrevText: '<ion class="fa fa-arrow-left"></i>',
+        navNextText: '<ion class="fa fa-arrow-right"></i>',
+        closeButtonText: '<ion class="fa fa-close"></i>',
+    });
+
+    // Demo 3: Initializing previewer with some options
+    // var options = {
+    //  paginationType: 'bullet',
+    //  paginationPosition: 'bottomLeft',
+    //  previewEffect: 'inOutBack',
+    //  fullScreen: true,
+    //  navPrevText: '<ion class="fa fa-arrow-left"></i>',
+    //  navNextText: '<ion class="fa fa-arrow-right"></i>',
+    //  closeButtonText: '<ion class="fa fa-close"></i>',
+    // }
+    var customizedPreviewer = new Previewer('.gallery-wrapper-3', {
+        paginationType: 'bullet',
+        paginationPosition: 'bottomLeft',
+        previewEffect: 'inOutBack',
+        fullScreen: true,
+        navPrevText: '<ion class="fa fa-arrow-left"></i>',
+        navNextText: '<ion class="fa fa-arrow-right"></i>',
+        closeButtonText: '<ion class="fa fa-close"></i>',
+    });
+
+</script>
+
+
+</html>

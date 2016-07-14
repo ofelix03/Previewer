@@ -1,0 +1,29 @@
+{
+  "name": "previewer",
+  "version": "1.0.0",
+  "description": "A simple jQuery based library that previews images, with added pagination, among other subtle features",
+  "main": "previewer.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "images",
+    "preview",
+    "previewer",
+    "jquery",
+    "gallery",
+    "gallery",
+    "images",
+    "image",
+    "previewer"
+  ],
+  "author": "Felix Otoo <ofelix03@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "bower": "^1.7.9",
+    "gulp": "^3.9.1",
+    "gulp-clean-css": "^2.0.11",
+    "gulp-jsmin": "^0.1.5",
+    "gulp-rename": "^1.2.2"
+  }
+}

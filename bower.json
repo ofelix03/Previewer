@@ -1,0 +1,36 @@
+{
+  "name": "images-previewer",
+  "description": "A simple jQuery based library that previews images, with added pagination, among other subtle features",
+  "main": "['previewer.js', 'previewer.css']",
+    "moduleType": [
+      "amd",
+      "globals"
+    ],
+    "keywords": [
+      "images",
+      "gallery",
+      "previewer",
+      "jquery",
+      "plugin"
+    ],
+    "authors": [
+      "Felix Otoo <ofelix03@gmail.com>"
+    ],
+    "license": "MIT",
+    "homepage": "",
+    "ignore": [
+      "node_modules",
+      "bower_components",
+      "demo/font-awesome",
+      "demo/jquery",
+      "jquery",
+      "font-awesome"
+    ],
+    "dependencies": {
+    
+    },
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/ofelix03/Previewer"
+    }
+  }

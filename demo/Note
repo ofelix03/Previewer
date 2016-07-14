@@ -1,0 +1,15 @@
+Follow this instructions to setup DEMO
+
+1. Make sure you have bower installed on your system. You can run  'bower -v' in your terminal to verify  
+  whether it is installed or not. A version string should be spat on your terminal if bower is already installed, else checkout 'https://bower.io' on how to install it.
+
+2. With bower installed, you can use it to install jQuery which is a dependency for this library and an 		optional FontAwesome which offers use font icons (arrow left, arrow right, and close) to improve the
+	aethestics of the UI of this plugin. And as I said, FontAwesome is optional and is not a requirement. 
+
+	Now let install jQuery and FontAwesome and get started playing with the DEMO. Run in your terminal:
+
+	` bower install `
+
+	Running the above code should setup everything right for playing with this library. Now just load the `index.html` file in your browser of choice and begin.
+
+	NB: After running 'bower install' you should see two new folders inside the demo folder -- `jquery` and `font-awesome`
