@@ -64,7 +64,7 @@ In my example above I used a class name `gallery-wrapper` on my surrounding bloc
 | pagination | boolean (**def**: true) | Adds a simple pagination to the previewer |
 | paginationType | string [number, bullet] (*default*: number) | Select one of two pagination types ( bullet or number ) |
 | paginationPosition | string [topLeft, topRight, bottomLeft, bottomRight] (*default*: 'topRight') | Determines the position of the paginator in the previewer |
-| navigation | boolean [true, false] | Adds a simple \'PREV\' and \'NEXT\' navigators to slide through images |
+| navigation | boolean [true, false] | Adds a simple 'PREV' and 'NEXT' navigators to slide through images |
 | navNextText | string | Customize the label of the previewer's NEXT navigator. You can use any font icon library, like FontAwesome's right arrow icon like so:  `<i class="fa fa-arrow-right"></i>` |
 | navPrevText | string | Customize the label of the previewer's PREV navigator. You can use any font icon library, like FontAwesome's left arrow icon like so: `<i class="fa fa-arrow-left"></i>` |
 | keyboardNavigation | bool [true, false] | Allows the use of the keyboards, left and right arrow keys to control the navigation through image gallery |
