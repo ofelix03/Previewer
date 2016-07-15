@@ -76,6 +76,7 @@ In my example above I used a class name `gallery-wrapper` on my surrounding bloc
 ## Preview Effects
 
 The following are currently the supported preview effects. These effects are all [CSS3 transition](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Transitions/Using_CSS_transitions).
+
 1. easeIn
 2. easeOut
 3. easeInOut
