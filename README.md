@@ -83,3 +83,11 @@ The following are currently the supported preview effects. These effects are all
 5. inBack
 6. inOutBack
 
+
+
+## Contributing
+
+You can help improve this docs by sending me a pull request and hopefully I will merge it in. 
+Also, you spotted an error (syntax or logic error) ? I will be glad to recieve a pull request of a fix of that 
+error. But I would love it if you first open an issue and hopefully if it's not already in the pipes of resolution
+by me or someone else, I will gladly assign it to you.
