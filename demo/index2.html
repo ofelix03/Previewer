@@ -166,7 +166,9 @@
       <li><strong>fullScreen</strong> : true</li>
     </ul>
     <div class="gallery-wrapper-3">
-      <img src="images/SplitShire-6636-970x500.jpg" alt="" class="g-image" />
+      <div>
+        <img src="images/SplitShire-6636-970x500.jpg" alt="" class="g-image" />
+      </div>
       <img src="images/hero-home.jpg" alt="" class="g-image" />
       <img src="images/IMG_8185-1800x996-970x500.jpg" alt="" class="g-image" />
       <img src="images/SplitShire-1270-970x500.jpg" alt="" class="g-image" />
@@ -189,16 +191,16 @@
     </div>
   </body>
 
-  <script
+  <!-- <script
     type="text/javascript"
     src="assets/jquery/dist/jquery.min.js"
-  ></script>
-  <script type="text/javascript" src="../src/previewer.js"></script>
+  ></script> -->
 
+  <script src="../dist/previewer.min.js"></script>
   <script type="text/javascript">
     // Demo 1: Initializing previewer with an empty options object
     // var options = {}
-    $(".gallery-wrapper").previewer({});
+    // $(".gallery-wrapper").previewer({});
 
     // Demo 2: Initializing previewer with some options
     // var options = {
@@ -211,9 +213,9 @@
     //  navNextText: '<ion class="fa fa-arrow-right"></i>',
     //  closeButtonText: '<ion class="fa fa-close"></i>'
     //  }
-    var autoPlayPreviewer = new Previewer(".gallery-wrapper-2", {
+    var autoPlayPreviewer = new previewer.Previewer(".gallery-wrapper-2", {
       transitionEffect: "inBack",
-      paginationType: "bullet",
+      paginationType: "number",
       paginationPosition: "topRight",
       autoPlay: true,
       slideTimeout: 2500,
@@ -232,11 +234,10 @@
     //  navNextText: '<ion class="fa fa-arrow-right"></i>',
     //  closeButtonText: '<ion class="fa fa-close"></i>',
     // }
-    var customizedPreviewer = new Previewer(".gallery-wrapper-3", {
+    var customizedPreviewer = new previewer.Previewer(".gallery-wrapper-3", {
       paginationType: "bullet",
-      paginationPosition: "bottomLeft",
+      paginationPosition: "topLeft",
       previewEffect: "inOutBack",
-      fullScreen: true,
       navPrevText: '<ion class="fa fa-arrow-left"></i>',
       navNextText: '<ion class="fa fa-arrow-right"></i>',
       closeButtonText: '<ion class="fa fa-close"></i>',

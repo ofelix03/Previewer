@@ -1,200 +1,213 @@
+.body-fixed {
+  overflow: hidden;
+}
+
 .g-previewer-wrapper {
-    position: fixed;
-    background-color: rgba(51, 51, 51, 0.49);
-    width: 0%;
-    height: 0%;
-    transition: all 0.7s;
-    left: 211px;
-    top: 256px;
-    overflow: hidden;
-    z-index: 3000;
-    font-family: Verdana, Sans-serif;
+  position: fixed;
+  background-color: rgba(51, 51, 51, 0.49);
+  width: 0%;
+  height: 0%;
+  transition: all 0.7s;
+  left: 211px;
+  top: 256px;
+  overflow: hidden;
+  z-index: 3000;
+  font-family: Verdana, Sans-serif;
+  overflow: hidden;
 }
 
 .g-previewer-close {
-    border: 1px solid #111;
-    padding: 0 4px;
-    position: absolute;
-    right: 10px;
-    top: 10px;
-    background: #111;
-    color: #FFF;
-    text-align: center;
-    font-size: 24px !important;
-    cursor: pointer;
-    border-radius: 4px;
-    transition: all 0.7s ease-in;
+  border: 1px solid #111;
+  padding: 0 4px;
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  background: #111;
+  color: #fff;
+  text-align: center;
+  font-size: 24px !important;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.4s ease-in;
 }
 
 .g-previewer-close:hover {
-    background-color: #222;
-    border: 1px solid #222;
+  background-color: #222;
+  border: 1px solid #222;
 }
 
-.g-previewer-wrapper--show{
-    width: 100%;
-    height: 100%;
-    left: 0% !important;
-    top: 0% !important;
+.g-previewer-wrapper--show {
+  width: 100%;
+  height: 100%;
+  left: 0% !important;
+  top: 0% !important;
 }
 
 .g-previewer-wrapper--ease-in {
-    transition: all 0.7s ease-in;
+  transition: all 0.4s ease-in;
 }
 
 .g-previewer-wrapper--ease-out {
-    transition: all 0.7s ease-out;
+  transition: all 0.4s ease-out;
 }
 
 .g-previewer-wrapper--ease-in-out {
-    transition: all 0.7s ease-in-out;
+  transition: all 0.4s ease-in-out;
 }
 
 .g-previewer-wrapper--in-out-back {
-    transition: all 0.7s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+  transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
 }
 
 .g-previewer-wrapper--in-back {
-    transition: all 0.7s cubic-bezier(0.6, -0.28, 0.74, 0.05);
+  transition: all 0.4s cubic-bezier(0.6, -0.28, 0.74, 0.05);
 }
 
 .g-previewer-wrapper--out-cubic {
-    transition: all 0.7s cubic-bezier(0.22, 0.61, 0.36, 1);
+  transition: all 0.4s cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
-
-.g-image-previewer{
-    width: 80%;
-    height: 80%;
-    overflow: hidden;
-    display: block;
-    margin-left: 10%;
-    margin-top: 7%;
-    z-index: 4000;
+.g-image-previewer {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  /* margin-left: 10%;
+  margin-top: 7%; */
+  z-index: 4000;
+  justify-content: center;
+  align-items: center;
 }
 
-@media screen and (max-width: 320px) {
-    .g-image-previewer {
-        margin-top: 15%;
-    }
-}
+/* @media screen and (max-width: 320px) {
+  .g-image-previewer {
+    margin-top: 15%;
+  }
+} */
 
 .g-image-previewer--full-screen {
-    width: 100% !important;
-    height: 100% !important;
-    margin: 0px;
+  width: 100% !important;
+  height: 100% !important;
+  margin: 0px;
 }
 
 .g-image-previewer__image {
-    height: 100%;
-    width: 100%;
-    transition: all 0.7s;
+  object-fit: contain;
+  object-position: center;
+  max-width: 100%;
+  max-height: 100%;
 }
 
 .g-nav {
-    min-width: 40px;
-    height: 50px;
-    position: absolute;
-    top: 50%;
-    display: none;
-    line-height: 50px;
-    text-align: center;
-    font-weight: bold;
-    text-transform: uppercase;
-    background: #111;
-    color: #FFF;
-    cursor: pointer;
-    transition: all 0.7s;
-    display: none;
+  min-width: 40px;
+  height: 50px;
+  position: absolute;
+  top: 50%;
+  display: none;
+  line-height: 50px;
+  text-align: center;
+  font-weight: bold;
+  text-transform: uppercase;
+  background: #111;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.7s;
+  display: none;
 }
 
 .g-nav--show {
-    display: block;
+  display: block;
 }
 
 .g-nav:hover {
-    background-color: #222;
+  background-color: #222;
 }
 
 .g-nav--show {
-    display: block;
+  display: block;
 }
 
 .g-nav--prev {
-    left: 0%;
-    border-radius: 0px 4px 4px 0px;
-    padding-right: 4px;
+  left: 0%;
+  border-radius: 0px 4px 4px 0px;
+  padding-right: 4px;
 }
 
 .g-nav--next {
-    right: 0%;
-    border-radius: 4px 0px 0px 4px;
-    padding-left: 4px;
+  right: 0%;
+  border-radius: 4px 0px 0px 4px;
+  padding-left: 4px;
 }
 
 .g-paginator-wrapper {
-    border-radius: 4px;
-    color: #FFF;
-    padding: 6px;
-    position: absolute;
-    max-width: 90%;
-    display: block;
+  border-radius: 4px;
+  color: #fff;
+  padding: 6px;
+  position: absolute;
+  max-width: 90%;
+  display: none;
+}
+
+.g-paginator-wrapper--hide {
+  display: none;
+}
+
+.g-paginator-wrapper--show {
+  display: inline-block;
 }
 
 .g-paginator-wrapper--number {
-    border: 1px solid #111;
-    background: #111;
+  border: 1px solid #111;
+  background: #111;
 }
 
-.g-paginator-wrapper--top-right{
-    top: 11px;
-    right: 60px;
+.g-paginator-wrapper--top-right {
+  top: 11px;
+  right: 50px;
 }
 
 .g-paginator-wrapper--top-left {
-    top: 11px;
-    left: 20px;
+  top: 11px;
+  left: 20px;
 }
 
 .g-paginator-wrapper--bottom-left {
-    bottom: 11px;
-    left: 20px;
+  bottom: 11px;
+  left: 20px;
 }
 
 .g-paginator-wrapper--bottom-right {
-    bottom: 11px;
-    right: 20px;
+  bottom: 11px;
+  right: 20px;
 }
 
 .g-paginator-wrapper:first-child {
-    display: none;
+  display: none;
 }
 
 .g-paginator__bullet {
-    border: 3px solid #111;
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    display: inline-block;
-    cursor: pointer;
-    margin: 0px 5px;
+  border: 3px solid #111;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+  cursor: pointer;
+  margin: 0px 5px;
 }
 
 .g-paginator__bullet--active {
-    background-color: #111;
+  background-color: #111;
 }
-
 
 .g-paginator__number {
-    font-size: 20px;
-    font-weight: 500;
+  font-size: 20px;
+  font-weight: 500;
 }
 
-
 .g-paginator__number--denominator {
-    font-weight: bold;
+  font-weight: bold;
 }
 
 .g-paginator__number--numerator:after {
-    content: " / ";
+  content: " / ";
 }

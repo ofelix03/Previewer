@@ -1,563 +1,498 @@
+import funcs from "./funcs";
+import effects from "./effects";
+import pagination from "./pagination";
+import classes from "./classes";
 
-var Previewer = (function($){
+let instanceCount = 0;
 
-    const CLASS_NAMES = {
-        // Previewer
-        PREVIEWER_WRAPPER: 'g-previewer-wrapper',
-        PREVIEWER_WRAPPER_SHOW: 'g-previewer-wrapper--show',
-        IMAGE_PREVIEWER: 'g-image-previewer',
-        IMAGE_PREVIEWER_FULLSCREEN: 'g-image-previewer--full-screen',
-        IMAGE_PREVIEWER_CENTERED: 'g-image-previewer--centered',
-        PREVIEW_IMAGE: 'g-image-previewer__image',
-        IMAGE: 'g-image',
-        PREVIEWER_CLOSE: 'g-previewer-close',
+export class Previewer {
+  constructor(selector, options) {
+    if (funcs.isString(selector)) {
+      this.selector = document.querySelector(selector);
+    } else if (selector.nodeType === Node.ELEMENT_NODE) {
+      this.selector = selector;
+    }
 
-        // Nav
-        PREVIEW_NAV: 'g-nav',
-        PREVIEW_NAV_SHOW: 'g-nav--show',
-        PREVIEW_NAV_PREV: 'g-nav--prev',
-        PREVIEW_NAV_NEXT: 'g-nav--next',
+    this.widnowScrollTop;
 
-        // Pagination
-        PAGINATOR_WRAPPER: 'g-paginator-wrapper',
-        PAGINATOR_WRAPPER_TOP_RIGHT: 'g-paginator-wrapper--top-right',
-        PAGINATOR_WRAPPER_TOP_LEFT: 'g-paginator-wrapper--top-left',
-        PAGINATOR_WRAPPER_BOTTOM_RIGHT: 'g-paginator-wrapper--bottom-right',
-        PAGINATOR_WRAPPER_BOTTOM_LEFT: 'g-paginator-wrapper--bottom-left',
-        PAGINATOR_WRAPPER_NUMBER: 'g-paginator-wrapper--number',
-        PAGINATOR_BULLET: 'g-paginator__bullet',
-        PAGINATOR_BULLET_ACTIVE: 'g-paginator__bullet--active',
-        PAGINATOR_NUMBER_NUMERATOR: 'g-paginator__number--numerator',
-        PAGINATOR_NUMBER_DENOMINATOR: 'g-paginator__number--denominator',
+    this.defaultOptions = {
+      fullScreen: false,
 
-        // Transitions
-        PREVIEWER_WRAPPER_EASE_IN: 'g-previewer-wrapper--ease-in',
-        PREVIEWER_WRAPPER_EASE_OUT: 'g-previewer-wrapper--ease-out',
-        PREVIEWER_WRAPPER_IN_BACK: 'g-previewer-wrapper--in-back',
-        PREVIEWER_WRAPPER_IN_OUT_BACK: 'g-previewer-wrapper--in-out-back',
-        PREVIEWER_WRAPPER_OUT_CUBIC: 'g-previewer-wrapper--out-cubic',
+      // Pagination
+      pagination: true,
+      paginationType: "number", // Options: numbers, bullets
+      paginationPosition: "topRight", // Options: topRight, topLeft, bottomRight, bottomLeft
+
+      // Navigation
+      navigation: true,
+      navPrevText: "PREV",
+      navNextText: "NEXT",
+      closeButtonText: "X",
+
+      keyboardNavigation: true,
+
+      // Autoplay
+      autoPlay: false,
+      slideTimeout: 1000,
+
+      // Transition
+      previewEffect: effects.linear,
     };
 
-    var instanceCounter = 0;
+    this.options = { ...this.defaultOptions, ...options };
 
-    return function Previewer(selector, options) {
-        var g = this;
+    this.instanceCount = instanceCount += 1;
+    this.currentContainerIndex;
+    this.currentPreviewImageIndex = 0;
+    this.previewerWrapper;
+    this.imagePreviewer;
+    this.previewImage;
+    this.image;
+    this.images;
+    this.previewerClose;
+    this.currentPrevewImagePosition;
 
-        // A simple counter which keeps track of the number of 
-        // instances of the object created
-        g.instanceCounter = ++instanceCounter;
+    this.previewNav;
+    this.previewNavPrev;
+    this.previewNavNext;
+    this.isPreviewed = false;
 
-        g.$container = $(selector);
-        g.currentContainerIndex;
-        g.$previewerWrapper;
-        g.$imagePreviewer;
-        g.$previewImage;
-        g.$image;
-        /** Array */
-        g.$images = [];
-        g.options;
-        g.previewer = {
-            currentImageIndex: 0,
-        };
-        g.pagination = {
-            types: ['number', 'bullet'],
-            positions: ['topRight', 'topLeft', 'bottomRight', 'bottomLeft'],
-        };
+    this.paginationWrapper;
 
-        // Tells whether an image is previewed
-        g.isPreviewed = false;
+    this.autoPlayTimeoutId;
 
-        g.transitions = {
-            linear: 'linear',
-            easeOut: 'easeOut',
-            easeIn: 'easeIn',
-            easeInOut: 'easeInOut',
-            outCubic: 'outCubic',
-            inOutBack: 'inOutBack',
-            inBack: 'inBack',
-        };
+    this.init();
+  }
 
-        var defaultOptions = {
-            fullScreen: false,
+  init() {
+    this.images = this.selector.querySelectorAll(`.${classes.IMAGE}`);
 
-            // Pagination
-            pagination: true,
-            paginationType: 'number', // Options: numbers, bullets
-            paginationPosition: 'topRight', // Options: topRight, topLeft, bottomRight, bottomLeft
+    this._bindIndexToImages();
 
-            // Navigation
-            navigation: true,
-            navPrevText: 'PREV',
-            navNextText: 'NEXT',
-            closeButtonText: 'X',
+    this.previewerWrapper = document.querySelector(
+      `.${classes.PREVIEWER_WRAPPER}`
+    );
 
-            keyboardNavigation: true,
+    if (!this.previewerWrapper) {
+      this.previewerWrapper = document.createElement("div");
+      this.previewerWrapper.setAttribute("index", this.instanceCount);
+      this.previewerWrapper.classList.add(classes.PREVIEWER_WRAPPER);
+      this.previewerWrapper.innerHTML = this.getPreviewerWrapperMarkup();
 
-            // Autoplay
-            autoPlay: false,
-            slideTimeout: 1000,
-
-            // Transition
-            previewEffect: g.transitions.linear,
-        }
-
-        g.options = $.extend({}, defaultOptions, options);
-
-        init();
-
-        //////////////////////////////////////
-        ///  # Functions
-        ////////////////////////////////////
-        
-        function init() {
-
-            initPreviewer();
-
-            // Let's look at the options
-            if (g.options.fullScreen) {
-                g.$imagePreviewer.addClass(CLASS_NAMES.IMAGE_PREVIEWER_FULLSCREEN);
-            }
-
-            // Let at listeners to all imags in all galleries 
-            g.$container.each(function(index){
-                var $container = $(this),
-                containerIndex = g.currentContainerIndex = $container.data('index');
-                g.$images[containerIndex].each(function(index){
-                    $image = $(this);
-                    $image.on('click', handleImageClicked);
-                });
-            });
-
-            if (g.options.keyboardNavigation && g.options.navigation) {
-                // Let allow the user to use the keyboard's left and right arrows keys to
-                // slide through the gallery
-                $(document).on('keyup', handleKeyboardNavigation);
-            }
-
-            $(document).on('keyup', function(event){
-                const ESCAPE_KEY_CODE = 27;
-                if (event.keyCode == ESCAPE_KEY_CODE) {
-                    handlePreviewerClose();
-                }
-            });
-
-            // Listen for preview close
-            g.$previewerClose.on("click", handlePreviewerClose);
-
-            if (g.options.navigation) {
-                // Let listen for the prev nav click and handle it
-                g.$previewNavPrev.click(handlePreviewNavPrev);
-
-                // Let listen for the next nav click and handle it
-                g.$previewNavNext.click(handlePreviewNavNext);
-            }
-        }
-
-        function handlePreviewerClose() {
-            g.$previewerWrapper.removeClass(CLASS_NAMES.PREVIEWER_WRAPPER_SHOW);
-            g.isPreviewed = false;
-        }
-
-        function handleKeyboardNavigation(event) {
-            const LEFT_ARROW_KEY = 37, RIGHT_ARROW_KEY = 39, SPACE_BAR = 32;
-
-            if (g.isPreviewed && !g.options.autoPlay) {
-                if (LEFT_ARROW_KEY == event.which) {
-                    handlePreviewNavPrev();
-                } else if (RIGHT_ARROW_KEY == event.which || SPACE_BAR == event.which) {
-                    handlePreviewNavNext();
-                }
-            }
-        }
-
-        function handleImageClicked() {
-            var $image = $(this);
-            buildPreview($image);
-            showPreviewer(getImageCenterPosition($image));
-        }
-
-        function handlePreviewNavNext() {
-            if (g.previewer.currentImageIndex == g.$images[g.currentContainerIndex].length ) {
-                var $image = $(g.$images[g.currentContainerIndex][0]);
-                buildPreview($image);
-                updatePaginator('next');
-            } else {
-                g.$images[g.currentContainerIndex].each(function(index){
-                    $image = $(this);
-                    if (($image.data('index') - g.previewer.currentImageIndex) == 1) {
-                        found = true;
-                        buildPreview($image);
-                        updatePaginator('next');
-
-                        return false;
-                    }
-                });
-            }
-
-        // Let check the options if use has allowed autoplay of images, 
-        // if yes let init autoplay
-        if (g.options.autoPlay && g.isPreviewed) {
-            initAutoPlay();
-        }
+      document.body.append(this.previewerWrapper);
     }
 
-    function handlePreviewNavPrev() {
-        $this = $(this);
+    this.imagePreviewer = this.previewerWrapper.querySelector(
+      `.${classes.IMAGE_PREVIEWER}`
+    );
 
-        if (g.previewer.currentImageIndex == 1) {
-            var $image = g.$images[g.currentContainerIndex].last();
-            buildPreview($image);
-            updatePaginator('prev');
-        } else {
-            g.$images[g.currentContainerIndex].each(function(){
-                $image = $(this);
-                if (($image.data('index') - g.previewer.currentImageIndex) == -1) {
-                    buildPreview($image);
-                    updatePaginator('prev');
-                    return false;
-                }
-            });
+    this.previewImage = this.previewerWrapper.querySelector(
+      `.${classes.PREVIEW_IMAGE}`
+    );
+
+    this.previewerClose = this.previewerWrapper.querySelector(
+      `.${classes.PREVIEWER_CLOSE}`
+    );
+
+    this.previewerClose.innerHTML = this.options.closeButtonText;
+
+    if (this.options.navigation) {
+      this.previewNav = this.previewerWrapper.querySelector(
+        `.${classes.PREVIEW_NAV}`
+      );
+      this.previewNavPrev = this.previewerWrapper.querySelector(
+        `.${classes.PREVIEW_NAV_PREV}`
+      );
+      this.previewNavNext = this.previewerWrapper.querySelector(
+        `.${classes.PREVIEW_NAV_NEXT}`
+      );
+
+      this.previewNavPrev.innerHTML = this.options.navPrevText;
+      this.previewNavNext.innerHTML = this.options.navNextText;
+
+      this.previewNavPrev.classList.add(classes.PREVIEW_NAV_SHOW);
+      this.previewNavNext.classList.add(classes.PREVIEW_NAV_SHOW);
+    }
+
+    if (this.options.pagination) {
+      if (this.options.paginationType == pagination.types.Number) {
+        this.paginationWrapper = this.previewerWrapper.querySelector(
+          `.${classes.PAGINATOR_WRAPPER_NUMBER}`
+        );
+      } else if (this.options.paginationType == pagination.types.Bullet) {
+        this.paginationWrapper = this.previewerWrapper.querySelector(
+          `.${classes.PAGINATOR_WRAPPER_BULLET}`
+        );
+      } else {
+        this.paginationWrapper = this.previewerWrapper.querySelector(
+          `.${classes.PAGINATOR_WRAPPER_NUMBER}`
+        );
+      }
+      this.paginationWrapper.classList.add(classes.PAGINATOR_WRAPPER_SHOW);
+    }
+
+    this._initListenerForKeyboardEvents();
+    this._initListenerForImageClick();
+    this._initListenerForNavButtons();
+
+    this.imagePreviewer.addEventListener("click", (event) => {
+      this.hidePreviewer();
+    });
+  }
+
+  _bindIndexToImages() {
+    let imageIndex = 0;
+    for (let image of this.images) {
+      image.setAttribute("index", imageIndex);
+      imageIndex++;
+    }
+  }
+
+  _initListenerForImageClick() {
+    for (let image of this.images) {
+      image.addEventListener("click", (event) => this.onImageClicked(event));
+    }
+  }
+
+  _initListenerForNavButtons() {
+    this.previewNavNext.addEventListener("click", (event) =>
+      this.showNextImage()
+    );
+    this.previewNavPrev.addEventListener("click", (event) =>
+      this.showPreviousImage()
+    );
+  }
+
+  _initListenerForKeyboardEvents() {
+    if (this.options.keyboardNavigation && this.options.navigation) {
+      document.addEventListener("keyup", (event) => {
+        this.handleKeyboardNavigation(event);
+      });
+    }
+
+    document.addEventListener("keyup", (event) => {
+      const ESCAPE_KEY = 27;
+      if (event.keyCode == ESCAPE_KEY) {
+        this.hidePreviewer();
+      }
+    });
+
+    this.previewerClose.addEventListener("click", (event) =>
+      this.hidePreviewer()
+    );
+  }
+
+  onImageClicked(event) {
+    const image = event.target;
+    this.updatePreview(image);
+    this.showPreviewer();
+  }
+
+  computeCurrentPreviewImagePosition(image) {
+    const imageDim = image.getBoundingClientRect();
+
+    const leftPos = imageDim.left + Math.ceil(imageDim.width / 2);
+    const topPos = imageDim.top + Math.ceil(imageDim.height / 2);
+
+    this.previewerWrapper.setAttribute(
+      "style",
+      `left: ${leftPos}px; top: ${topPos}px`
+    );
+  }
+
+  updatePreview(image) {
+    this.previewImage.src = image.getAttribute("src");
+    this.currentPreviewImageIndex = parseInt(image.getAttribute("index"));
+    this.computeCurrentPreviewImagePosition(image);
+  }
+
+  showPreviewer() {
+    if (this.options.pagination) {
+      if (this.options.paginationType == pagination.types.Bullet) {
+        this._buildBulletPagination();
+      } else if (this.options.paginationType == pagination.types.Number) {
+        this._buildNumberPagination();
+      }
+      this._initBulletPaginationClickLister();
+      this._positionPagination();
+    }
+
+    // Time to show previewer
+    setTimeout(() => {
+      if (this.options.previewEffect == effects.linear) {
+        this.previewerWrapper.classList.add(classes.PREVIEWER_WRAPPER_SHOW);
+      } else {
+        const transitionClass = this._getTransitionClassFor(
+          this.options.previewEffect
+        );
+        if (transitionClass) {
+          this.previewerWrapper.classList.add(transitionClass);
+          this.previewerWrapper.classList.add(classes.PREVIEWER_WRAPPER_SHOW);
         }
+      }
+      this.isPreviewed = true;
+      // Check for autoplay
+      if (this.options.autoPlay) {
+        this._initAutoPlay();
+      }
 
-        // Let check the options if use has allowed autoplay of images, 
-        // if yes let init autoplay
-        if (g.options.autoPlay && g.isPreviewed) {
-            initAutoPlay();
-        }
+      document.querySelector("body").classList.add(classes.DOCUMENT_FIXED);
+    }, 400);
+  }
+
+  _positionPagination() {
+    if (this.options.paginationPosition) {
+      const pos = this.options.paginationPosition;
+      if (pos == pagination.positions.topRight) {
+        this.paginationWrapper.classList.add(
+          classes.PAGINATOR_WRAPPER_TOP_RIGHT
+        );
+      } else if (pos == pagination.positions.topLeft) {
+        this.paginationWrapper.classList.add(
+          classes.PAGINATOR_WRAPPER_TOP_LEFT
+        );
+      } else if (pos == pagination.positions.bottomRight) {
+        this.paginationWrapper.classList.add(
+          classes.PAGINATOR_WRAPPER_BOTTOM_RIGHT
+        );
+      } else if (pos == pagination.positions.bottomLeft) {
+        this.paginationWrapper.classList.add(
+          classes.PAGINATOR_WRAPPER_BOTTOM_LEFT
+        );
+      }
+    } else {
+      this.paginationWrapper.classList.add(
+        classes.PAGINATOR_WRAPPER_BOTTOM_RIGHT
+      );
+    }
+  }
+
+  hidePreviewer() {
+    this.previewerWrapper.classList.remove(classes.PREVIEWER_WRAPPER_SHOW);
+    document.querySelector("body").classList.remove(classes.DOCUMENT_FIXED);
+
+    this.isPreviewed = false;
+
+    if (this.options.autoPlay) {
+      this._restartAutoPlay();
     }
 
-    function initBulletClickListener() {
-        var bullets = g.$previewerWrapper.find('.' + CLASS_NAMES.PAGINATOR_BULLET);
-        bullets.each(function(){
-            $(this).click(function(){
-                var bullet  = $(this), bulletIndex = bullet.data('index');
+    // if (this.options.paginationPosition) {
+    //   const pos = this.options.paginationPosition;
+    //   if (pos == pagination.positions.topRight) {
+    //     this.paginationWrapper.classList.remove(
+    //       classes.PAGINATOR_WRAPPER_TOP_RIGHT
+    //     );
+    //   } else if (pos == pagination.positions.topLeft) {
+    //     this.paginationWrapper.classList.remove(
+    //       classes.PAGINATOR_WRAPPER_TOP_LEFT
+    //     );
+    //   } else if (pos == pagination.positions.bottomRight) {
+    //     this.paginationWrapper.classList.remove(
+    //       classes.PAGINATOR_WRAPPER_BOTTOM_RIGHT
+    //     );
+    //   } else if (pos == pagination.positions.bottomLeft) {
+    //     this.paginationWrapper.classList.remove(
+    //       classes.PAGINATOR_WRAPPER_BOTTOM_LEFT
+    //     );
+    //   }
+    // } else {
+    //   this.paginationWrapper.classList.remove(
+    //     classes.PAGINATOR_WRAPPER_BOTTOM_RIGHT
+    //   );
+    // }
+  }
 
-                var $image = $(g.$images[g.currentContainerIndex][bulletIndex - 1]);
+  _getTransitionClassFor() {
+    // Let first make sure the first letter of the previewEffect from user is lowercase.
+    this.options.previewEffect =
+      this.options.previewEffect[0].toLowerCase() +
+      this.options.previewEffect.substr(1);
 
-                buildPreview($image);
-                showPreviewer();
-                restartAutoPlay();
-            });
-        });
+    if (this.options.previewEffect == effects.easeIn) {
+      return classes.PREVIEWER_WRAPPER_EASE_IN;
+    } else if (this.options.previewEffect == effects.easeOut) {
+      return classes.PREVIEWER_WRAPPER_EASE_OUT;
+    } else if (this.options.previewEffect == effects.easeInOut) {
+      return classes.PREVIEWER_WRAPPER_EASE_IN_OUT;
+    } else if (this.options.previewEffect == effects.inOutBack) {
+      return classes.PREVIEWER_WRAPPER_IN_OUT_BACK;
+    } else if (this.options.previewEffect == effects.outCubic) {
+      return classes.PREVIEWER_WRAPPER_OUT_CUBIC;
+    } else if (this.options.previewEffect == effects.inBack) {
+      return classes.PREVIEWER_WRAPPER_IN_BACK;
     }
+  }
 
+  _initAutoPlay() {
+    this.autoPlayTimeoutId = setInterval(() => {
+      this.showNextImage();
+    }, this.options.slideTimeout);
+  }
 
-    function buildPreview($image) {
-        // Building the previewer, we're just assigning the image's url to
-        // the g.$previewImage(<img>) src attribute
-        // We then update the g.previewer.currentImageIndex and g.currentContainerIndex to
-        // reflect the build
-        g.$previewImage.attr('src', $image.attr('src'));
-        g.previewer.currentImageIndex = $image.data('index');
-        g.currentContainerIndex = $image.parent().data('index');
+  _restartAutoPlay() {
+    clearTimeout(this.autoPlayTimeoutId);
+  }
+
+  getPreviewerWrapperMarkup() {
+    return `
+            <div class="g-previewer-close"></div>
+
+            <div class="g-image-previewer">
+                <img src="" alt="" class="g-image-previewer__image">
+            </div>
+
+            <!-- Navigation -->
+            <div class="g-nav g-nav--prev">Prev</div>
+            <div class="g-nav g-nav--next">Next</div>  
+
+            <!-- Pagination -->
+            <div class="g-paginator-wrapper g-paginator-wrapper--bullet">
+              <!-- bullets here -->
+            </div>
+            <div class="g-paginator-wrapper g-paginator-wrapper--number"> 
+                <span class="g-paginator__number g-paginator__number--numerator">5</span>
+                <span class="g-paginator__number g-paginator__number--denominator">10</span>
+            </div>  
+    `;
+  }
+
+  _getPaginationBulletMarkup() {
+    return '<span class="g-paginator__bullet"></span>';
+  }
+
+  _buildBulletPagination() {
+    let bulletsMarkup = "",
+      bulletIndex = 0,
+      images_len = this.images.length;
+
+    for (let i = 0; i < images_len; i++) {
+      bulletsMarkup += this._getPaginationBulletMarkup();
     }
+    this.paginationWrapper.innerHTML = bulletsMarkup;
 
-    function initAutoPlay() {
-        g.timeoutId  = setTimeout(function(){handlePreviewNavNext();}, g.options.slideTimeout);
+    const bullets = this.paginationWrapper.querySelectorAll(
+      `.${classes.PAGINATOR_BULLET}`
+    );
+
+    // Associate index data-attr to image
+    for (let bullet of bullets) {
+      bullet.setAttribute("index", bulletIndex);
+      if (bulletIndex == this.currentPreviewImageIndex) {
+        bullet.classList.add(classes.PAGINATOR_BULLET_ACTIVE);
+      }
+      bulletIndex++;
     }
+  }
 
-    function restartAutoPlay() {
-        clearTimeout(g.timeoutId);
+  _buildNumberPagination() {
+    const numeratorPage = this.paginationWrapper.querySelector(
+      `.${classes.PAGINATOR_NUMBER_NUMERATOR}`
+    );
+    const denominatorPage = this.paginationWrapper.querySelector(
+      `.${classes.PAGINATOR_NUMBER_DENOMINATOR}`
+    );
+
+    numeratorPage.innerHTML = this.currentPreviewImageIndex + 1;
+    denominatorPage.innerHTML = this.images.length;
+  }
+
+  _initBulletPaginationClickLister() {
+    const bullets = this.paginationWrapper.querySelectorAll(
+      `.${classes.PAGINATOR_BULLET}`
+    );
+    for (let bullet of bullets) {
+      bullet.addEventListener("click", (event) =>
+        this._onBulletClickedHandler(event)
+      );
     }
+  }
 
-    function initPreviewer() {
-        // Let first , fetch, index and prepend our previewer wrapper html markup to the body of doc
-        $(getPreviewerWrapperHtml()).data('index', g.instanceCounter).prependTo('body');
+  _onBulletClickedHandler(event) {
+    const bulletIndex = event.target.getAttribute("index");
+    const image = this.images[bulletIndex];
+    this.updatePreview(image);
+    this.updatePaginator();
+    this._restartAutoPlay();
+  }
 
-        // Let now look for our this instance specific $previewerWrapper, what we just prepended to the DOM
-        $('.' + CLASS_NAMES.PREVIEWER_WRAPPER).each(function(){
-            var $this = $(this);
-
-            if ($this.data('index') == g.instanceCounter) {
-                g.$previewerWrapper = $this;
-                return false;
-            }
-        });
-
-        g.$imagePreviewer = g.$previewerWrapper.find('.' + CLASS_NAMES.IMAGE_PREVIEWER);
-        g.$previewImage = g.$previewerWrapper.find('.' + CLASS_NAMES.PREVIEW_IMAGE);
-        g.$previewerClose = g.$previewerWrapper.find('.' + CLASS_NAMES.PREVIEWER_CLOSE).html(g.options.closeButtonText);
-
-        // A previewer object instance can target more than one selector (that's galleries)
-        // So let's check how many gallery containers are in the document, and find the 
-        // number of images found in them. This allows use to create different previews 
-        // for each set of images
-        if (g.$container.length > 1) {
-            g.$container.each(function(index){
-                container = $(this);
-                container.data('index', index);
-                    // Let store all the images found each of the containers under an array index
-                    g.$images[index] = container.find('.' + CLASS_NAMES.IMAGE); 
-                });
-        } else {
-            // There is only one gallery for the selector
-            g.$container.data('index', 0);
-            g.$images[0] = g.$container.find('.' + CLASS_NAMES.IMAGE);
-        }
-
-        // Let append an index to the images, starting from 0, with all images
-        // in each specific container.
-        // This helps me with identify images
-        var i = 0;
-        for(; i < g.$container.length; i++) {
-            g.$images[i].each(function(index){
-                appendIndexToImage($(this), index);
-            });
-        }
-
-        if (g.options.navigation) {
-            g.$previewNav = g.$previewerWrapper.find('.' + CLASS_NAMES.PREVIEW_NAV).addClass(CLASS_NAMES.PREVIEW_NAV_SHOW);
-            g.$previewNavPrev = g.$previewerWrapper.find('.' + CLASS_NAMES.PREVIEW_NAV_PREV).html(g.options.navPrevText);
-            g.$previewNavNext = g.$previewerWrapper.find('.' + CLASS_NAMES.PREVIEW_NAV_NEXT).html(g.options.navNextText);                 
-        }
-
-        if (g.options.pagination) {
-            var index = g.pagination.types.indexOf(g.options.paginationType);
-            if (index == -1) {
-                // No options specified by user, or option not in available types, let stick wth the 
-                // default type
-                g.$previewerWrapper.append($(getPaginationHtml()).addClass(CLASS_NAMES.PAGINATOR_WRAPPER_NUMBER));
-            } else {
-                g.$previewerWrapper.append(getPaginationHtml(g.pagination.types[index]));
-                if (g.options.paginationType == 'number') {
-                    // Let add a little specific styling to the number pagination markup 
-                    g.$previewerWrapper.find('.' + CLASS_NAMES.PAGINATOR_WRAPPER).addClass(CLASS_NAMES.PAGINATOR_WRAPPER_NUMBER);
-                }
-            }
-
-            var paginatorWrapper = g.$previewerWrapper.find('.' + CLASS_NAMES.PAGINATOR_WRAPPER);
-            if (paginationPositionExists(g.options.paginationPosition)) {
-                var pos = getPaginationPosition();
-
-                if (pos == 'topRight') {
-                    paginatorWrapper.addClass(CLASS_NAMES.PAGINATOR_WRAPPER_TOP_RIGHT)
-                } else if (pos == 'topLeft') {
-                    paginatorWrapper.addClass(CLASS_NAMES.PAGINATOR_WRAPPER_TOP_LEFT);
-                } else if (pos == 'bottomRight') {
-                    paginatorWrapper.addClass(CLASS_NAMES.PAGINATOR_WRAPPER_BOTTOM_RIGHT);
-                } else if (pos == 'bottomLeft') {
-                    paginatorWrapper.addClass(CLASS_NAMES.PAGINATOR_WRAPPER_BOTTOM_LEFT);
-                }
-            } else {
-                // Let resort to default position
-                paginatorWrapper.addClass(CLASS_NAMES.PAGINATOR_WRAPPER_BOTTOM_RIGHT);
-            }
-        } 
+  updatePaginator() {
+    if (this.options.pagination) {
+      const type = this.options.paginationType;
+      if (type == pagination.types.Number) {
+        this.updateNumberPaginator();
+      } else if (type == pagination.types.Bullet) {
+        this.updateBulletPaginator();
+      }
+    } else {
+      this.updateNumberPaginator();
     }
+  }
 
-    function paginationPositionExists(position) {
-        if (g.pagination.positions.indexOf(g.options.paginationPosition) > -1) {
-            return true;
-        }
+  updateNumberPaginator() {
+    this.paginationWrapper.querySelector(
+      `.${classes.PAGINATOR_NUMBER_NUMERATOR}`
+    ).innerHTML = this.currentPreviewImageIndex + 1;
+    this.paginationWrapper.querySelector(
+      `.${classes.PAGINATOR_NUMBER_DENOMINATOR}`
+    ).innerHTML = this.images.length;
+  }
 
-        return false;
+  updateBulletPaginator() {
+    const bullets = this.paginationWrapper.querySelectorAll(
+      `.${classes.PAGINATOR_BULLET}`
+    );
+    for (let bullet of bullets) {
+      const index = bullet.getAttribute("index");
+      if (index == this.currentPreviewImageIndex) {
+        bullet.classList.add(classes.PAGINATOR_BULLET_ACTIVE);
+      } else {
+        bullet.classList.remove(classes.PAGINATOR_BULLET_ACTIVE);
+      }
     }
+  }
 
-    function getPaginationPosition() {
-        var index = g.pagination.positions.indexOf(g.options.paginationPosition);
+  handlePreviewerClose() {
+    this.previewerWrapper.classList.remove(classes.PREVIEWER_WRAPPER_SHOW);
+    this.isPreviewed = false;
+  }
 
-        return g.pagination.positions[index];
+  handleKeyboardNavigation(event) {
+    const LEFT_ARROW_KEY = 37,
+      RIGHT_ARROW_KEY = 39,
+      SPACE_BAR = 32;
+
+    if (this.isPreviewed && !this.options.autoPlay) {
+      if (LEFT_ARROW_KEY == event.which) {
+        this.showPreviousImage();
+      } else if (RIGHT_ARROW_KEY == event.which || SPACE_BAR == event.which) {
+        this.showNextImage();
+      }
     }
+  }
 
-    function showPreviewer(position) {
-        if (position !== undefined) {
-            g.$previewerWrapper.css({left: position.left, top: position.top});
-        }
+  showPreviousImage() {
+    let image, imagePos;
+    imagePos =
+      this.currentPreviewImageIndex == 0
+        ? this.images.length - 1
+        : this.currentPreviewImageIndex - 1;
 
-        if (g.options.pagination) {
-            if (g.options.paginationType == 'bullet') {
-                createBulletPaginator(); 
-            } else if (g.options.paginationType == 'number' || g.options.paginationType === undefined) {
-                createNumberPaginator();
-            }
-        }
+    image = this.images[imagePos];
 
-        g.isPreviewed = true;
+    this.updatePreview(image);
+    this.updatePaginator();
+  }
 
-        if (g.options.pagination) {
-            initBulletClickListener();        
-        }
+  showNextImage() {
+    let image, imagePos;
+    imagePos =
+      this.currentPreviewImageIndex == this.images.length - 1
+        ? 0
+        : this.currentPreviewImageIndex + 1;
+    image = this.images[imagePos];
 
-        // Let check the options if use has allowed autoplay of images, 
-        // if yes let init autoplay
-        if (g.options.autoPlay && g.isPreviewed) {
-            initAutoPlay();
-        }
-
-        // Now let just show the previewer
-        setTimeout(function(){
-            if (g.options.previewEffect !== g.transitions.linear) {
-                var transitionClassName = getTransitionClassFor();
-                g.$previewerWrapper.addClass(CLASS_NAMES.PREVIEWER_WRAPPER_SHOW).addClass(transitionClassName);
-            } else {
-                // Let use default transition, which is linear
-                g.$previewerWrapper.addClass(CLASS_NAMES.PREVIEWER_WRAPPER_SHOW);
-            }
-        }, 400);
-    }
-
-
-    function getTransitionClassFor() {
-        // Let first make sure the first letter of the previewEffect from user is lowercase.
-        g.options.previewEffect = g.options.previewEffect[0].toLowerCase() + g.options.previewEffect.substr(1);
-
-        if (g.options.previewEffect == g.transitions.easeIn) {
-            return CLASS_NAMES.PREVIEWER_WRAPPER_EASE_IN;
-        } else if (g.options.previewEffect == g.transitions.easeOut) {
-            return CLASS_NAMES.PREVIEWER_WRAPPER_EASE_OUT;
-        } else if (g.options.previewEffect == g.transitions.easeInOut) {
-            return CLASS_NAMES.PREVIEWER_WRAPPER_EASE_IN_OUT;
-        } else if (g.options.previewEffect == g.transitions.inOutBack) {
-            return CLASS_NAMES.PREVIEWER_WRAPPER_IN_OUT_BACK;
-        } else if (g.options.previewEffect == g.transitions.outCubic) {
-            return CLASS_NAMES.PREVIEWER_WRAPPER_OUT_CUBIC;
-        } else if (g.options.previewEffect == g.transitions.inBack) {
-            return CLASS_NAMES.PREVIEWER_WRAPPER_IN_BACK;
-        }
-    }
-
-    function getImageCenterPosition(image) {
-        var leftPos, topPos, imageOffset = image.offset();
-
-        leftPos = imageOffset.left  +  Math.ceil(image.innerWidth() / 2);
-        topPos = (imageOffset.top - $(window).scrollTop()) + Math.ceil(image.innerHeight() / 2);
-
-        return {left: leftPos, top: topPos};
-    }
-
-    function appendIndexToImage(image, index) {
-        return image.data('index', index + 1);
-    }
-
-    function createBulletPaginator() {
-        var bulletElement = $(getPaginationBulletElement());
-        var paginatorWrapper = g.$previewerWrapper.find('.' + CLASS_NAMES.PAGINATOR_WRAPPER);
-         // Let .html() to clear any existing bullet element in paginatorWrapper
-         paginatorWrapper.html('');
-         var i = 0;
-         for (; i < g.$images[g.currentContainerIndex].length; i++) {
-            if (g.previewer.currentImageIndex == (i + 1)) {
-                bulletElement.clone().data('index', i + 1).addClass(CLASS_NAMES.PAGINATOR_BULLET_ACTIVE).appendTo(paginatorWrapper);
-            } else {
-                bulletElement.clone().data('index', i + 1).appendTo(paginatorWrapper);
-            }
-        }
-    }
-
-    function createNumberPaginator() {
-        g.$previewerWrapper.find('.' + CLASS_NAMES.PAGINATOR_NUMBER_NUMERATOR).text(g.previewer.currentImageIndex);
-        g.$previewerWrapper.find('.' + CLASS_NAMES.PAGINATOR_NUMBER_DENOMINATOR).text(g.$images[g.currentContainerIndex].length);
-    }
-
-    function updatePaginator(action) {
-        if (g.options.pagination) {
-            if (g.options.paginationType == 'number' || g.options.paginationType === undefined) {
-                updateNumberPaginator(action);
-            } else if (g.options.paginationType == 'bullet') {
-                updateBulletPaginator(action);
-            }
-        }
-
-        function updateNumberPaginator(action) {
-            g.$previewerWrapper.find('.' + CLASS_NAMES.PAGINATOR_NUMBER_NUMERATOR).text(g.previewer.currentImageIndex);
-        }
-
-        function updateBulletPaginator(action) {
-            // action can be [prev|next];
-            var bullets = g.$previewerWrapper.find('.' + CLASS_NAMES.PAGINATOR_WRAPPER).find('.' + CLASS_NAMES.PAGINATOR_BULLET);
-            if (action === undefined) {
-                throw "upateBulletPaginator() requires an action parameter of value 'next' or 'prev', none given";
-            } else if (action == 'prev') {
-                bullets.each(function(){
-                    var $this = $(this), index = $this.data('index');
-                    // Let look for the bullet with an index matching the index of the current image
-                    if (index == g.previewer.currentImageIndex) {
-                        $this.addClass(CLASS_NAMES.PAGINATOR_BULLET_ACTIVE);
-                        return false;
-                    } 
-                });
-
-                // Let look for bullet with an index matching the previously current image's index
-                bullets.each(function(){
-                    var $this = $(this), index = $this.data('index');
-
-                    if (index == g.previewer.currentImageIndex + 1 
-                        || ((g.previewer.currentImageIndex == g.$images[g.currentContainerIndex].length) && index == 1)) {
-                        $this.removeClass(CLASS_NAMES.PAGINATOR_BULLET_ACTIVE);
-                    return false;
-                }
-            });
-            } else if (action == 'next') {
-                // Let look for the bullet with an index matching the index of the current image
-                bullets.each(function(){
-                    var $this = $(this), index = $this.data('index');
-
-                    if (index == g.previewer.currentImageIndex) {
-                        $this.addClass(CLASS_NAMES.PAGINATOR_BULLET_ACTIVE);
-                        return false;
-                    }    
-                });
-
-                // Let remove the active state from the bullet right behind the current active bullet
-                bullets.each(function(){
-                    var $this = $(this), index = $this.data('index');
-
-                    if (index == g.previewer.currentImageIndex - 1
-                        || (index == g.$images[g.currentContainerIndex].length && (g.previewer.currentImageIndex == 1))
-                        ) {
-                        $this.removeClass(CLASS_NAMES.PAGINATOR_BULLET_ACTIVE);
-                    return false;
-                }
-            });
-            }
-        }
-    }
-
-    function getPreviewerWrapperHtml() {
-        return '<div class="g-previewer-wrapper">' + 
-        '<div class="g-previewer-close"></div>' +
-        '<div class="g-image-previewer">' +
-        '<img src="" alt="" class="g-image-previewer__image">' +
-        '</div>' +
-        '<div class="g-nav g-nav--prev">Prev</div>' +
-        '<div class="g-nav g-nav--next">Next</div>'  +   
-        '</div>';
-    }
-
-    function getPaginationHtml(paginationType) {
-        var bulletPagination = '<div class="g-paginator-wrapper"><!-- In here will be bullet elements from getPaginationBulletElement() --></div>';
-
-        var numberPagination = '<div class="g-paginator-wrapper">' + 
-        '<span class="g-paginator__number g-paginator__number--numerator">5</span>' + 
-        '<span class="g-paginator__number g-paginator__number--denominator">10</span>' + 
-        '</div>';
-
-        if (paginationType === undefined || paginationType == 'number') {
-            return numberPagination;
-        } else {
-            return bulletPagination;
-        }
-    }
-
-    function getPaginationBulletElement() {
-        return '<span class="g-paginator__bullet"></span>';
-    }
+    this.updatePreview(image);
+    this.updatePaginator();
+  }
 }
-})(jQuery);
-
-(function($, window, Previewer){
-
-    // Attaching to jQuery as a plugin
-    if ($ !== undefined) {
-        $.fn.previewer = function(options){
-            return new Previewer(this, options);
-        }
-    }
-
-    // Attaching it to the global Object
-    if (window !== undefined) {
-        window.Previewer = Previewer;
-    }
-
-})(jQuery, window, Previewer);
-

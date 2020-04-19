@@ -1,11 +1,12 @@
 {
-  "name": "previewer",
-  "version": "1.0.0",
-  "description": "A simple jQuery based library that previews images, with added pagination, among other subtle features",
+  "name": "@ofelix03/previewer",
+  "version": "0.1.0",
+  "description": "A JavaScript library for previewer images and image galleries. 100% JavaScript, no external dependencies",
   "main": "previewer.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "types": "./index.d.ts",
   "keywords": [
     "images",
     "preview",
@@ -21,9 +22,20 @@
   "license": "MIT",
   "devDependencies": {
     "bower": "^1.7.9",
-    "gulp": "^3.9.1",
+    "gulp": "^4.0.0",
     "gulp-clean-css": "^2.0.11",
     "gulp-jsmin": "^0.1.5",
-    "gulp-rename": "^1.2.2"
-  }
+    "gulp-rename": "^1.2.2",
+    "rollup-stream": "^1.24.1",
+    "vinyl-source-stream": "^2.0.0"
+  },
+  "dependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ofelix03/Previewer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ofelix03/Previewer/issues"
+  },
+  "homepage": "https://github.com/ofelix03/Previewer#readme"
 }
