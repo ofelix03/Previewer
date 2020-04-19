@@ -1,5 +1,5 @@
 {
-  "name": "@ofelix03/previewer",
+  "name": "previewer",
   "version": "0.1.0",
   "description": "A JavaScript library for previewer images and image galleries. 100% JavaScript, no external dependencies",
   "main": "previewer.js",

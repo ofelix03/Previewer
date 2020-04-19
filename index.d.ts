@@ -1,7 +1,10 @@
-declare module "@ofelix03/previewer" {
-  export class Previewer {
-    constructor(selector: string | HTMLElement, options: any);
+// export namespace Previewer {
+//     export class Previewer {
+//         constructor(selector: string, options: any)
+//     }
+// }
 
-    init(): void;
+  export class Previewer {
+    constructor(selector: string, options: any);
   }
-}
+
