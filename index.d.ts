@@ -18,15 +18,17 @@
 /*~ If this module is a UMD module that exposes a global variable 'myClassLib' when
  *~ loaded outside a module loader environment, declare that global here.
  *~ Otherwise, delete this declaration.
- */
-export as namespace previewerjs;
+//  */
+// export as namespace '@ofelix03/previewerjs';
 
-/*~ This declaration specifies that the class constructor function
- *~ is the exported object from the file
- */
-export = Previewer;
+// /*~ This declaration specifies that the class constructor function
+//  *~ is the exported object from the file
+//  */
+// export = Previewer;
 
 /*~ Write your module's methods and properties in this class */
-declare class Previewer {
-  constructor(selector: string, options: any);
+declare module "@ofelix03/previewerjs" {
+  class Previewer {
+    constructor(selector: string, options: any);
+  }
 }
