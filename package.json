@@ -2,7 +2,7 @@
   "name": "@ofelix03/previewerjs",
   "version": "0.2.0",
   "description": "A JavaScript library for previewer images and image galleries. 100% JavaScript, no external dependencies",
-  "main": "previewer.js",
+  "main": "dist/previewer.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

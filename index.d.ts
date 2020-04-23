@@ -28,7 +28,7 @@
 
 /*~ Write your module's methods and properties in this class */
 declare module "@ofelix03/previewerjs" {
-  class Previewer {
+  export default class Previewer {
     constructor(selector: string, options: any);
   }
 }
