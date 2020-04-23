@@ -1,5 +1,5 @@
 {
-  "name": "previewer",
+  "name": "@ofelix03/previewerjs",
   "version": "0.1.0",
   "description": "A JavaScript library for previewer images and image galleries. 100% JavaScript, no external dependencies",
   "main": "previewer.js",
@@ -11,12 +11,9 @@
     "images",
     "preview",
     "previewer",
-    "jquery",
+    "previewerjs",
     "gallery",
-    "gallery",
-    "images",
-    "image",
-    "previewer"
+    "images"
   ],
   "author": "Felix Otoo <ofelix03@gmail.com>",
   "license": "MIT",

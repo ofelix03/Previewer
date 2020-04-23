@@ -19,7 +19,7 @@
  *~ loaded outside a module loader environment, declare that global here.
  *~ Otherwise, delete this declaration.
  */
-export as namespace previewer;
+export as namespace previewerjs;
 
 /*~ This declaration specifies that the class constructor function
  *~ is the exported object from the file
