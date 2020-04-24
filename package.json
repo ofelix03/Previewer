@@ -2,9 +2,11 @@
   "name": "@ofelix03/previewerjs",
   "version": "0.2.0",
   "description": "A JavaScript library for previewer images and image galleries. 100% JavaScript, no external dependencies",
-  "main": "dist/previewer.js",
+  "main": "dist/previewer.umd.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "rollup -i src/previewer.js -o dist/previewer.js -f umd --name \"previewerjs\"",
+    "build-2": "rollup -c --name \"@ofelix03/previewerjs\""
   },
   "types": "./index.d.ts",
   "keywords": [
@@ -19,7 +21,7 @@
   "license": "MIT",
   "devDependencies": {
     "bower": "^1.7.9",
-    "gulp": "^4.0.0",
+    "gulp": "^4.0.2",
     "gulp-clean-css": "^2.0.11",
     "gulp-jsmin": "^0.1.5",
     "gulp-rename": "^1.2.2",
