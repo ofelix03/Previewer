@@ -30,5 +30,7 @@
 declare module "@ofelix03/previewerjs" {
   export default class Previewer {
     constructor(selector: string, options: any);
+
+    init(): void;
   }
 }
