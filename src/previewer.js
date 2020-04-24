@@ -201,9 +201,11 @@ export class Previewer {
   }
 
   updatePreview(image) {
-    this.previewImage.src = image.getAttribute("src");
-    this.currentPreviewImageIndex = parseInt(image.getAttribute("index"));
-    this.computeCurrentPreviewImagePosition(image);
+    if (image !== null) {
+      this.previewImage.src = image.getAttribute("src");
+      this.currentPreviewImageIndex = parseInt(image.getAttribute("index"));
+      this.computeCurrentPreviewImagePosition(image);
+    }
   }
 
   showPreviewer() {
