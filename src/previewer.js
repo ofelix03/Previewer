@@ -39,7 +39,7 @@ export class Previewer {
       previewEffect: effects.linear,
     };
 
-    this.options = { ...this.defaultOptions, ...options };
+    this.options = Object.assign({}, this.defaultOptions, options);
 
     this.instanceCount = instanceCount += 1;
     this.currentContainerIndex;
@@ -131,13 +131,7 @@ export class Previewer {
       this.paginationWrapper.classList.add(classes.PAGINATOR_WRAPPER_SHOW);
     }
 
-    this._initListenerForKeyboardEvents();
     this._initListenerForImageClick();
-    this._initListenerForNavButtons();
-
-    this.imagePreviewer.addEventListener("click", (event) => {
-      this.hidePreviewer();
-    });
   }
 
   _bindIndexToImages() {
@@ -150,23 +144,29 @@ export class Previewer {
 
   _initListenerForImageClick() {
     for (let image of this.images) {
-      image.addEventListener("click", (event) => this.onImageClicked(event));
+      image.addEventListener("click", (event) => {
+        this.onImageClicked(event);
+        return false;
+      });
     }
   }
 
   _initListenerForNavButtons() {
-    this.previewNavNext.addEventListener("click", (event) =>
-      this.showNextImage()
-    );
-    this.previewNavPrev.addEventListener("click", (event) =>
-      this.showPreviousImage()
-    );
+    this.previewNavNext.addEventListener("click", (event) => {
+      this.showNextImage();
+      return false;
+    });
+    this.previewNavPrev.addEventListener("click", (event) => {
+      this.showPreviousImage();
+      return false;
+    });
   }
 
   _initListenerForKeyboardEvents() {
     if (this.options.keyboardNavigation && this.options.navigation) {
       document.addEventListener("keyup", (event) => {
         this.handleKeyboardNavigation(event);
+        return false;
       });
     }
 
@@ -175,11 +175,13 @@ export class Previewer {
       if (event.keyCode == ESCAPE_KEY) {
         this.hidePreviewer();
       }
+      return false;
     });
 
-    this.previewerClose.addEventListener("click", (event) =>
-      this.hidePreviewer()
-    );
+    this.previewerClose.addEventListener("click", (event) => {
+      this.hidePreviewer();
+      return false;
+    });
   }
 
   onImageClicked(event) {
@@ -201,7 +203,7 @@ export class Previewer {
   }
 
   updatePreview(image) {
-    if (image !== null) {
+    if (image !== undefined) {
       this.previewImage.src = image.getAttribute("src");
       this.currentPreviewImageIndex = parseInt(image.getAttribute("index"));
       this.computeCurrentPreviewImagePosition(image);
@@ -209,6 +211,14 @@ export class Previewer {
   }
 
   showPreviewer() {
+    this._initListenerForKeyboardEvents();
+    this._initListenerForNavButtons();
+
+    this.imagePreviewer.addEventListener("click", (event) => {
+      this.hidePreviewer();
+      return false;
+    });
+
     if (this.options.pagination) {
       if (this.options.paginationType == pagination.types.Bullet) {
         this._buildBulletPagination();
@@ -278,31 +288,6 @@ export class Previewer {
     if (this.options.autoPlay) {
       this._restartAutoPlay();
     }
-
-    // if (this.options.paginationPosition) {
-    //   const pos = this.options.paginationPosition;
-    //   if (pos == pagination.positions.topRight) {
-    //     this.paginationWrapper.classList.remove(
-    //       classes.PAGINATOR_WRAPPER_TOP_RIGHT
-    //     );
-    //   } else if (pos == pagination.positions.topLeft) {
-    //     this.paginationWrapper.classList.remove(
-    //       classes.PAGINATOR_WRAPPER_TOP_LEFT
-    //     );
-    //   } else if (pos == pagination.positions.bottomRight) {
-    //     this.paginationWrapper.classList.remove(
-    //       classes.PAGINATOR_WRAPPER_BOTTOM_RIGHT
-    //     );
-    //   } else if (pos == pagination.positions.bottomLeft) {
-    //     this.paginationWrapper.classList.remove(
-    //       classes.PAGINATOR_WRAPPER_BOTTOM_LEFT
-    //     );
-    //   }
-    // } else {
-    //   this.paginationWrapper.classList.remove(
-    //     classes.PAGINATOR_WRAPPER_BOTTOM_RIGHT
-    //   );
-    // }
   }
 
   _getTransitionClassFor() {
