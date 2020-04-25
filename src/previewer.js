@@ -110,8 +110,10 @@ export class Previewer {
       this.previewNavPrev.innerHTML = this.options.navPrevText;
       this.previewNavNext.innerHTML = this.options.navNextText;
 
-      this.previewNavPrev.classList.add(classes.PREVIEW_NAV_SHOW);
-      this.previewNavNext.classList.add(classes.PREVIEW_NAV_SHOW);
+      if (this.images.length > 1) {
+        this.previewNavPrev.classList.add(classes.PREVIEW_NAV_SHOW);
+        this.previewNavNext.classList.add(classes.PREVIEW_NAV_SHOW);
+      }
     }
 
     if (this.options.pagination) {
@@ -128,7 +130,9 @@ export class Previewer {
           `.${classes.PAGINATOR_WRAPPER_NUMBER}`
         );
       }
-      this.paginationWrapper.classList.add(classes.PAGINATOR_WRAPPER_SHOW);
+      if (this.images.length > 1) {
+        this.paginationWrapper.classList.add(classes.PAGINATOR_WRAPPER_SHOW);
+      }
     }
 
     this._initListenerForImageClick();
