@@ -180,11 +180,6 @@ class Previewer {
 
       this.previewNavPrev.innerHTML = this.options.navPrevText;
       this.previewNavNext.innerHTML = this.options.navNextText;
-
-      if (this.images.length > 1) {
-        this.previewNavPrev.classList.add(classes.PREVIEW_NAV_SHOW);
-        this.previewNavNext.classList.add(classes.PREVIEW_NAV_SHOW);
-      }
     }
 
     if (this.options.pagination) {
@@ -200,9 +195,6 @@ class Previewer {
         this.paginationWrapper = this.previewerWrapper.querySelector(
           `.${classes.PAGINATOR_WRAPPER_NUMBER}`
         );
-      }
-      if (this.images.length > 1) {
-        this.paginationWrapper.classList.add(classes.PAGINATOR_WRAPPER_SHOW);
       }
     }
 
@@ -286,8 +278,17 @@ class Previewer {
   }
 
   showPreviewer() {
+    this.images = this.selector.querySelectorAll(`.${classes.IMAGE}`);
+
     this._initListenerForKeyboardEvents();
-    this._initListenerForNavButtons();
+
+    if (this.options.navigation) {
+      if (this.images.length > 1) {
+        this.previewNavPrev.classList.add(classes.PREVIEW_NAV_SHOW);
+        this.previewNavNext.classList.add(classes.PREVIEW_NAV_SHOW);
+      }
+      this._initListenerForNavButtons();
+    }
 
     this.imagePreviewer.addEventListener("click", (event) => {
       this.hidePreviewer();
@@ -302,6 +303,9 @@ class Previewer {
       }
       this._initBulletPaginationClickLister();
       this._positionPagination();
+      if (this.images.length > 1) {
+        this.paginationWrapper.classList.add(classes.PAGINATOR_WRAPPER_SHOW);
+      }
     }
 
     // Time to show previewer
@@ -362,6 +366,15 @@ class Previewer {
 
     if (this.options.autoPlay) {
       this._restartAutoPlay();
+    }
+
+    if (this.options.navigation) {
+      this.previewNavPrev.classList.remove(classes.PREVIEW_NAV_SHOW);
+      this.previewNavNext.classList.remove(classes.PREVIEW_NAV_SHOW);
+    }
+
+    if (this.options.pagination) {
+      this.paginationWrapper.classList.remove(classes.PAGINATOR_WRAPPER_SHOW);
     }
   }
 
