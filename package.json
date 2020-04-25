@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "rollup -i src/previewer.js -o dist/previewer.js -f umd --name \"previewerjs\"",
-    "build-2": "rollup -c --name \"@ofelix03/previewerjs\""
+    "build-2": "rollup -c --name \"@ofelix03/previewerjs\"",
+    "gulp": "gulp"
   },
   "types": "./index.d.ts",
   "keywords": [
