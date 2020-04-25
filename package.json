@@ -1,6 +1,6 @@
 {
   "name": "@ofelix03/previewerjs",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "A JavaScript library for previewer images and image galleries. 100% JavaScript, no external dependencies",
   "main": "dist/previewer.umd.js",
   "scripts": {
